@@ -59,5 +59,10 @@ alias push="git push origin"
 alias diff="git diff"
 
 alias qute="qutebrowser"
+alias rm="rm -i"
+
+# Some more config stuff
+alias fishsrc="source ~/.config/fish/conf.d/omf.fish"
+alias fishconf="nvim ~/.config/fish/conf.d/omf.fish"
 
 alias battery="cat /sys/class/power_supply/BAT*/capacity"
