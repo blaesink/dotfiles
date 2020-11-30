@@ -78,6 +78,7 @@ nnoremap <Leader>/ :call Comment_Line()<CR>
 
 " Go to definition
 nnoremap <Leader>gd :call Go_To_Def()<CR>
+nnoremap <Leader>gD :call Find_References()<CR>
 
 " File Management
 "nnoremap <Leader>. :Ranger<CR>
@@ -228,6 +229,7 @@ function! Tab_Or_Complete()
 endfunction!
 
 " Caveman Doom-Emacs tab switching
+" TODO make this nicer, maybe even list the possible tabs
 fu! Tab_Switch()
         let l:buff_no = input("")
         if l:buff_no
@@ -271,8 +273,9 @@ endfu
 " Check to see if a line is commented
 fu! Is_Commented()
         let l:comment_chars = ['#', '/', '"']
-        " Go to beginning of the line
-        :norm ^
+        " Go to beginning of the line. The next two lines are not elegant.
+        " There should be a nicer way to do this
+        :norm ^ 
         let l:first_char = getline('.')[getpos('.')[2]-1] " Seems pretty barbaric but this works
         for char in l:comment_chars
                 if l:first_char ==? char
@@ -300,7 +303,7 @@ fu! Handle_Comment_Extension(ftype)
         endif
 endfu!
 
-" Go to function definition under cursor.
+" Go to function/class definition for text under cursor.
 fu! Go_To_Def()
         let l:search_term = expand("<cword>")
         " Search for the keyword and the search term in the buffer
@@ -328,11 +331,22 @@ endfu!
 
 " Find a search term in other files using Ack/Ag
 fu! Find_In_Files(term)
-        let l:func_def_keywds = ['def', 'fn', 'fu!', 'function!', 'function', 'class', 'struct'] " C like stuff will have to be handled later
-        for keywd in l:func_def_keywds
-                let l:search_term = keywd . " " . a:term
-                if :call execute "Ack" . " \"" . l:search_term "\" ."
-                        return
+        let l:buff_ext = expand('%:e')
+        let l:keywds = {"py": ['def', 'class'], "clike": ['fn', 'struct', 'enum']}
+        for ext in keys(l:keywds)
+                if l:buff_ext ==? ext
+                        for keywd in l:keywds[ext]
+                                let l:search_term = keywd . " " . a:term
+                                exec "Ack" . " \"" . l:search_term . "\" ."
+                        endfor
                 endif
         endfor
+        :clo
+        return
+endfu!
+
+" Find references of a search term
+fu! Find_References()
+        let l:search_term = expand("<cword>")
+        exec "Ack!" . " \"" . l:search_term . "\" ."
 endfu!
