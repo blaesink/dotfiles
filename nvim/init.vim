@@ -193,6 +193,8 @@ endif
 " = Functions =
 " Beware, some of these may be barbaric in implementation
 
+let b:buff_dir = expand("%:p:h")
+
 " A master-stack XMonad-stye window layout
 fu! Monad_Split()
         :vs
@@ -266,7 +268,10 @@ endfu!
 
 " Uncomment a line
 fu! Uncomment()
-        :norm ^df 
+        :norm ^
+        " Delete until the first space char, which should uncomment the line
+        " if you don't have anything else set to your comment...
+        :norm df 
         :norm $
 endfu
 
@@ -275,7 +280,7 @@ fu! Is_Commented()
         let l:comment_chars = ['#', '/', '"']
         " Go to beginning of the line. The next two lines are not elegant.
         " There should be a nicer way to do this
-        :norm ^ 
+        :norm ^
         let l:first_char = getline('.')[getpos('.')[2]-1] " Seems pretty barbaric but this works
         for char in l:comment_chars
                 if l:first_char ==? char
@@ -348,5 +353,5 @@ endfu!
 " Find references of a search term
 fu! Find_References()
         let l:search_term = expand("<cword>")
-        exec "Ack!" . " \"" . l:search_term . "\" ."
+        exec "Ack!" . " \"" . l:search_term . "\" " . b:buff_dir
 endfu!
