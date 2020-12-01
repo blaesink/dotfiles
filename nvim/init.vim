@@ -193,7 +193,7 @@ endif
 " = Functions =
 " Beware, some of these may be barbaric in implementation
 
-let b:buff_dir = expand("%:p:h")
+" let b:buff_dir = expand("%:p:h")
 
 " A master-stack XMonad-stye window layout
 fu! Monad_Split()
@@ -252,18 +252,10 @@ fu! Comment_Line()
                 return
         endif
         
-        " Get the current line
-        let l:extensions = { 'oct': ['py', 'sh', 'rb', 'fish'], 'clike': ['cpp', 'c', 'h', 'hpp', 'rs', 'js', 'jsx'], 'vim': ['vim'], 'lisp': ['el']}
-        let l:buff_ext = expand('%:e') " Extension
-
         " Match on the filetype
-        for ftype in keys(l:extensions)
-                for ext in l:extensions[ftype]
-                        if l:buff_ext ==? ext
-                                :call Handle_Comment_Extension(ftype)
-                        endif
-                endfor
-        endfor
+        let l:ftype = Get_File_Family(expand('%:e'))
+        :call Handle_Comment_Extension(l:ftype)
+
 endfu!
 
 " Uncomment a line
@@ -316,7 +308,7 @@ fu! Go_To_Def()
                 " Go to the line in the buffer
                 :norm Find_In_Buffer(l:search_term) G
         else
-                " Use an external
+                " Use an external search program
                 :call Find_In_Files(l:search_term)
         endif
 endfu!
@@ -331,18 +323,19 @@ fu! Find_In_Buffer(term)
                         return l:line_no
                 endif
         endfor
-        return 0 " Fail
+        return
 endfu!
 
 " Find a search term in other files using Ack/Ag
 fu! Find_In_Files(term)
-        let l:buff_ext = expand('%:e')
+        let l:ftype = Get_File_Family(expand('%:e'))
+        let l:buff_dir = expand('%:p:h')
         let l:keywds = {"py": ['def', 'class'], "clike": ['fn', 'struct', 'enum']}
         for ext in keys(l:keywds)
-                if l:buff_ext ==? ext
+                if l:ftype ==? ext
                         for keywd in l:keywds[ext]
                                 let l:search_term = keywd . " " . a:term
-                                exec "Ack" . " \"" . l:search_term . "\" ."
+                                exec "Ack" . " \"" . l:search_term . "\" " l:buff_dir
                         endfor
                 endif
         endfor
@@ -352,6 +345,22 @@ endfu!
 
 " Find references of a search term
 fu! Find_References()
+        let l:buff_dir = expand("%:p:h")
         let l:search_term = expand("<cword>")
-        exec "Ack!" . " \"" . l:search_term . "\" " . b:buff_dir
+        exec "Ack!" . " \"" . l:search_term . "\" " . l:buff_dir
+endfu!
+
+" Get the family that the file is like
+fu! Get_File_Family(ext)
+        let l:extensions = { 'oct': ['py', 'sh', 'rb', 'fish'], 'clike': ['cpp', 'c', 'h', 'hpp', 'rs', 'js', 'jsx'], 'vim': ['vim'], 'lisp': ['el']}
+
+        " Match on the filetype
+        for ftype in keys(l:extensions)
+                for ext in l:extensions[ftype]
+                        if a:ext ==? ext
+                                return ftype
+                        endif
+                endfor
+        endfor
+        return
 endfu!
