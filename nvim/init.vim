@@ -1,3 +1,9 @@
+" Lazy -- probably just make these plug compatible later
+source filefuncs.vim
+source comment.vim
+source git.vim
+source buffer.vim
+
 " = Netrw Settings =
 let g:netrw_liststyle = 3
 let g:netrw_banner = 0
@@ -193,8 +199,6 @@ endif
 " = Functions =
 " Beware, some of these may be barbaric in implementation
 
-" let b:buff_dir = expand("%:p:h")
-
 " A master-stack XMonad-stye window layout
 fu! Monad_Split()
         :vs
@@ -203,25 +207,7 @@ fu! Monad_Split()
         wincmd h
 endfu
 
-" Caveman-style dired clone
-fu! Buff_Switch()
-        :ls<CR>
-        let l:buff_no = input("Enter the buffer you want to change to: ")
-        if l:buff_no
-                execute "buffer" l:buff_no
-        endif
-endfu!
-
-" Caveman-style emacs buffer kill
-fu! Buff_Kill()
-        :ls<CR>
-        let l:kill_buff_no = input("Enter the buffer you want to kill: ")
-        if l:kill_buff_no
-                execute "bd" l:kill_buff_no
-        endif
-endfu!
-
-" Tab Autocomplete 
+" Tab Autocomplete, taken from someone else
 function! Tab_Or_Complete()
 	if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
 		return "\<C-N>"
@@ -229,138 +215,3 @@ function! Tab_Or_Complete()
 		return "\<Tab>"
 	endif
 endfunction!
-
-" Caveman Doom-Emacs tab switching
-" TODO make this nicer, maybe even list the possible tabs
-fu! Tab_Switch()
-        let l:buff_no = input("")
-        if l:buff_no
-                execute "tabn" l:buff_no
-        endif
-endfu!
-
-" Comment and uncomment lines!
-fu! Comment_Line()
-        " Make sure that the beginning of the line isn't a comment, if so,
-        " uncomment it
-        if len(getline('.')) ==? 0
-                echo "Cannot comment empty line!"
-                return
-        endif
-        if Is_Commented()
-                :call Uncomment()
-                return
-        endif
-        
-        " Match on the filetype
-        let l:ftype = Get_File_Family(expand('%:e'))
-        :call Handle_Comment_Extension(l:ftype)
-
-endfu!
-
-" Uncomment a line
-fu! Uncomment()
-        :norm ^
-        " Delete until the first space char, which should uncomment the line
-        " if you don't have anything else set to your comment...
-        :norm df 
-        :norm $
-endfu
-
-" Check to see if a line is commented
-fu! Is_Commented()
-        let l:comment_chars = ['#', '/', '"']
-        " Go to beginning of the line. The next two lines are not elegant.
-        " There should be a nicer way to do this
-        :norm ^
-        let l:first_char = getline('.')[getpos('.')[2]-1] " Seems pretty barbaric but this works
-        for char in l:comment_chars
-                if l:first_char ==? char
-                        return 1
-                endif
-        endfor
-endfu!
-
-" I wish case was a thing
-fu! Handle_Comment_Extension(ftype)
-        " Super shitty if-else incoming
-        if a:ftype ==? 'clike'
-                :norm I// 
-                :norm $
-        elseif a:ftype ==? 'oct'
-                :norm I# 
-                :norm $
-        elseif a:ftype ==? 'vim'
-                :norm I" 
-                :norm $
-        elseif a:ftype ==? 'lisp'
-                :norm I; 
-                :norm $
-
-        endif
-endfu!
-
-" Go to function/class definition for text under cursor.
-fu! Go_To_Def()
-        let l:search_term = expand("<cword>")
-        " Search for the keyword and the search term in the buffer
-        if Find_In_Buffer(l:search_term)
-                " Go to the line in the buffer
-                :norm Find_In_Buffer(l:search_term) G
-        else
-                " Use an external search program
-                :call Find_In_Files(l:search_term)
-        endif
-endfu!
-
-" Find a term in buffer without using Ack/Ag/etc
-fu! Find_In_Buffer(term)
-        let l:func_def_keywds = ['def', 'fn', 'fu!', 'function!', 'function', 'class', 'struct'] " C like stuff will have to be handled later
-
-        for keywd in l:func_def_keywds
-                if search(keywd . " " . a:term)
-                        let l:line_no = search(keywd . " " . a:term)
-                        return l:line_no
-                endif
-        endfor
-        return
-endfu!
-
-" Find a search term in other files using Ack/Ag
-fu! Find_In_Files(term)
-        let l:ftype = Get_File_Family(expand('%:e'))
-        let l:buff_dir = expand('%:p:h')
-        let l:keywds = {"py": ['def', 'class'], "clike": ['fn', 'struct', 'enum']}
-        for ext in keys(l:keywds)
-                if l:ftype ==? ext
-                        for keywd in l:keywds[ext]
-                                let l:search_term = keywd . " " . a:term
-                                exec "Ack" . " \"" . l:search_term . "\" " l:buff_dir
-                        endfor
-                endif
-        endfor
-        :clo
-        return
-endfu!
-
-" Find references of a search term
-fu! Find_References()
-        let l:buff_dir = expand("%:p:h")
-        let l:search_term = expand("<cword>")
-        exec "Ack!" . " \"" . l:search_term . "\" " . l:buff_dir
-endfu!
-
-" Get the family that the file is like
-fu! Get_File_Family(ext)
-        let l:extensions = { 'oct': ['py', 'sh', 'rb', 'fish'], 'clike': ['cpp', 'c', 'h', 'hpp', 'rs', 'js', 'jsx'], 'vim': ['vim'], 'lisp': ['el']}
-
-        " Match on the filetype
-        for ftype in keys(l:extensions)
-                for ext in l:extensions[ftype]
-                        if a:ext ==? ext
-                                return ftype
-                        endif
-                endfor
-        endfor
-        return
-endfu!

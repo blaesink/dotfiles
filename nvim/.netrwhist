@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =0
+let g:netrw_dirhist_0='/home/plato/.config/nvim'
+let g:netrw_dirhist_9='/home/plato/code/rust/scurvy/src'
+let g:netrw_dirhist_8='/home/plato/.config/.git'
+let g:netrw_dirhist_7='/home/plato/code/rust/scurvy/src'
+let g:netrw_dirhist_6='/home/plato/.config/nvim'
+let g:netrw_dirhist_5='/home/plato/.doom.d'
+let g:netrw_dirhist_4='/home/plato'
+let g:netrw_dirhist_3='/home/plato/.config'
+let g:netrw_dirhist_2='/home/plato/.config/nvim'
+let g:netrw_dirhist_1='/home/plato/code/rust/scurvy/src'
