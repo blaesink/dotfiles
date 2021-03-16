@@ -10,36 +10,36 @@ from libqtile.utils import guess_terminal
 
 import os
 mod = "mod1"
-#terminal = guess_terminal()
-terminal = "st"
+terminal = "kitty"
 
 os.system("setxkbmap -option ctrl:nocaps")
 os.system("nitrogen --restore")
 
+
 keys = [
     # Switch between windows in current stack pane
     Key([mod], "j", lazy.layout.down(),
-            desc="Move focus down in stack pane"),
+        desc="Move focus down in stack pane"),
     Key([mod], "k", lazy.layout.up(),
         desc="Move focus up in stack pane"),
     Key([mod], "l", lazy.layout.right()),
     Key([mod], "h", lazy.layout.left()),
 
-        # Move windows up or down in current stack
+    # Move windows up or down in current stack
     Key([mod, "control"], "k", lazy.layout.shuffle_down(),
         desc="Move window down in current stack "),
     Key([mod, "control"], "j", lazy.layout.shuffle_up(),
         desc="Move window up in current stack "),
 
-        # Switch window focus to other pane(s) of stack
+    # Switch window focus to other pane(s) of stack
     Key([mod], "space", lazy.layout.next(),
         desc="Switch window focus to other pane(s) of stack"),
 
-        # Swap panes of split stack
+    # Swap panes of split stack
     Key([mod, "shift"], "space", lazy.layout.rotate(),
         desc="Swap panes of split stack"),
 
-        # Toggle between split and unsplit sides of stack.
+    # Toggle between split and unsplit sides of stack.
     # Split = all windows displayed
     # Unsplit = 1 window displayed, like Max layout, but still with
     # multiple stack panes
@@ -47,7 +47,7 @@ keys = [
         desc="Toggle between split and unsplit sides of stack"),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
 
-        # Toggle between different layouts as defined below
+    # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
 
@@ -72,6 +72,7 @@ def make_group_names():
         ("DEV",{'layout':'max'}),
         #("EMACS",{'layout':'max'}),
         ("OTHER",{'layout':'monadtall'}),
+        ("TERM",{'layout':'monadtall'}),
     ]
 
 def init_groups():
@@ -131,29 +132,29 @@ screens = [
                              foreground=colors['cyan']),
                 widget.Sep(linewidth = 0, padding = 6),
 
-                    # Put things in the middle
-                    widget.Spacer(),
+                # Put things in the middle
+                widget.Spacer(),
                 widget.GroupBox(
                     #highlight_color = colors['active'],
-                        this_current_screen_border=colors['orange'],
+                    this_current_screen_border=colors['orange'],
                     highlight_method = 'text',
                     inactive = colors['inactive'],
                     padding_x = 4,
                     use_mouse_wheel = False,
                 ),
 
-                    widget.Prompt(background = colors['bar']),
+                widget.Prompt(background = colors['bar']),
                 widget.Prompt(name='exit_button',background = colors['red']),
 
-                    #Push everything past here to the right side of the screen
-                    widget.Spacer(),
+                #Push everything past here to the right side of the screen
+                widget.Spacer(),
                 widget.TextBox(text="|",foreground=colors['pink']),
                 widget.CPU(format='CPU: {load_percent}%',
                            foreground = colors['pink']),
                 #widget.ThermalSensor(
                 #    tag_sensor='fan1',
                 #    foreground=colors['pink']),
-                    widget.TextBox(text="|",foreground=colors['pink']),
+                widget.TextBox(text="|",foreground=colors['pink']),
                 widget.Memory(format='{MemUsed}M/{MemTotal}M',
                               foreground=colors['yellow']),
                 widget.TextBox(text="|",foreground=colors['yellow']),
@@ -178,10 +179,10 @@ screens = [
                 widget.TextBox(text="|",foreground=colors['cyan']),
                 widget.Systray(),
             ],
-            size = 20,
-            background=colors['bar']
-        ),
-    ),
+    size = 20,
+    background=colors['bar']
+),
+),
 ]
 
 # Drag floating layouts.

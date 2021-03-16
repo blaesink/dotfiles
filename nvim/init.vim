@@ -1,9 +1,3 @@
-" Lazy -- probably just make these plug compatible later
-source filefuncs.vim
-source comment.vim
-source git.vim
-source buffer.vim
-
 " = Netrw Settings =
 let g:netrw_liststyle = 3
 let g:netrw_banner = 0
@@ -66,8 +60,8 @@ nnoremap <Leader><Tab><Tab> :call Tab_Switch()<CR>
 nnoremap <Leader><Tab>d :tabclose<CR>
 
 " Buffer behavior
-nnoremap <Leader>b[ :bp<CR>
-nnoremap <Leader>b] :bn<CR>
+" nnoremap <Leader>b[ :bp<CR>
+" nnoremap <Leader>b] :bn<CR>
 nnoremap <C-x>k :call Buff_Kill()<CR>
 nnoremap <Leader><Leader> :call Buff_Switch()<CR>
 
@@ -131,10 +125,9 @@ au FileType python nnoremap <Leader>r :!python % <CR>
 au FileType python nnoremap <Leader>t :!pytest -vv<CR>
 
 " == Rust ==
-au FileType rust nnoremap <Leader>br :!cargo build --release<CR>
+" au FileType rust nnoremap <Leader>br :!cargo build --release<CR>
 au FileType rust nnoremap <Leader>bb :!cargo build<CR>
-au FileType rust nnoremap <Leader>r :!cargo run --release<CR>
-au FileType rust nnoremap <Leader>c :!cargo build --release<CR>
+au FileType rust nnoremap <Leader>r :!cargo run<CR>
 au FileType rust nnoremap <Leader>t :!cargo test<CR>
 
 " == Go ==
@@ -177,23 +170,25 @@ set statusline+=\|%c
 
 " = Plugins =
 call plug#begin('~/.vim/plugged')
+Plug '~/.vim/plugged/cavevim'
 Plug 'morhetz/gruvbox'
 Plug 'cocopon/iceberg.vim'
 Plug 'ghifarit53/tokyonight-vim'
 Plug 'mileszs/ack.vim'
+Plug 'joshdick/onedark.vim'
 call plug#end()
 
 " == Color Settings (from plugins) ==
 set termguicolors
 let g:tokyonight_style = 'storm'
 let g:tokyonight_enable_italic = 1
-colorscheme tokyonight
+colorscheme onedark
 
 " == Search with Ag (the silver searcher) ==
 
 " Use ack.vim, but set the executable to ag
 if executable('ag')
-        let g:ackprg='ag'
+let g:ackprg='ag'
 endif
 
 " = Functions =
@@ -201,17 +196,20 @@ endif
 
 " A master-stack XMonad-stye window layout
 fu! Monad_Split()
-        :vs
-        wincmd l
-        :sp
-        wincmd h
+:vs
+wincmd l
+:sp
+wincmd h
 endfu
 
 " Tab Autocomplete, taken from someone else
 function! Tab_Or_Complete()
-	if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
-		return "\<C-N>"
-	else
-		return "\<Tab>"
-	endif
+if col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+        return "\<C-N>"
+else
+        return "\<Tab>"
+endif
 endfunction!
+
+au filetype dot nnoremap <Leader>d :!dot -Tpng -o %<.png %<CR><ESC>
+au filetype dot nnoremap <Leader>c :!circo -Tpng -o %<.png %<CR><ESC>

@@ -28,12 +28,13 @@ alias brightness="xrandr --output eDP1 --brightness"
 alias cputemp="sensors | grep -A 2 Package"
 alias view='viewnior'
 alias xup="xrdb -merge ~/.Xresources"
-alias rg="ranger"
+# alias rg="ranger"
 #alias gogo="go build $1 && ./$1"
+alias config="cd ~/.config"
 
 # ls commands
-alias ls="ls -X --color="auto" --group-directories-first"
-alias la="ls -a -X --color="auto" --group-directories-first"
+alias ls="exa --color="auto" --group-directories-first"
+alias la="exa -a --color="auto" --group-directories-first"
 
 # a few qol things
 alias rxp="rustc --explain"
@@ -65,4 +66,11 @@ alias rm="rm -i"
 alias fishsrc="source ~/.config/fish/conf.d/omf.fish"
 alias fishconf="nvim ~/.config/fish/conf.d/omf.fish"
 
-alias battery="cat /sys/class/power_supply/BAT*/capacity"
+alias battery="bat /sys/class/power_supply/BAT*/capacity"
+
+alias please="sudo"
+# Color in tree
+alias tree="tree -C"
+
+# Use starship.rs
+starship init fish | source
